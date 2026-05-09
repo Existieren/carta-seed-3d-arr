@@ -611,6 +611,11 @@ body::before {
   color: var(--accent-warm);
 }
 .btn:active { transform: translateY(1px); }
+.btn .lm { display: none; }
+.btn.icon-only {
+  padding: 7px 9px; display: inline-flex; align-items: center; justify-content: center;
+}
+.btn.icon-only svg { display: block; }
 select.btn {
   -webkit-appearance: none; appearance: none;
   background-image:
@@ -788,6 +793,67 @@ select.btn option:hover {
 }
 .panel .close:hover { color: var(--text-0); }
 
+/* ---------- INSIGHTS SHEET (slide-up bottom sheet for mobile + desktop overlay) ---------- */
+.sheet {
+  position: fixed; left: 50%; bottom: 16px; transform: translate(-50%, calc(100% + 32px));
+  width: min(560px, calc(100vw - 24px));
+  background: var(--glass);
+  border: 1px solid var(--line-2);
+  border-radius: 16px;
+  padding: 22px 24px 20px;
+  backdrop-filter: blur(16px) saturate(170%);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  z-index: 14;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  color: var(--text-1);
+}
+.sheet.open { transform: translate(-50%, 0); }
+.sheet-handle {
+  width: 40px; height: 4px; border-radius: 999px;
+  background: rgba(245,247,255,0.25);
+  margin: -8px auto 12px;
+}
+.sheet-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: 0; font-size: 22px; cursor: pointer;
+  color: var(--text-2); line-height: 1; padding: 0;
+}
+.sheet-close:hover { color: var(--text-0); }
+.sheet-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent-warm);
+}
+.sheet h3 {
+  margin: 4px 0 12px;
+  font-size: 17px; font-weight: 700; letter-spacing: -0.015em;
+  color: var(--text-0);
+}
+.sheet ul {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+  font-size: 13.5px; line-height: 1.5;
+}
+.sheet li {
+  padding-left: 18px; position: relative;
+}
+.sheet li::before {
+  content: "→";
+  position: absolute; left: 0; top: 0;
+  color: var(--accent-warm);
+  font-family: 'JetBrains Mono', monospace;
+}
+.sheet b { color: var(--text-0); font-weight: 600; }
+@media (max-width: 720px) {
+  .sheet {
+    bottom: 0; left: 0; right: 0; transform: translateY(calc(100% + 16px));
+    width: auto; border-radius: 16px 16px 0 0;
+    padding: 16px 18px calc(20px + env(safe-area-inset-bottom));
+  }
+  .sheet.open { transform: translateY(0); }
+}
+
 /* ---------- BOTTOM-LINE CALLOUT (McKinsey-style finding strip) ---------- */
 .bottom-line {
   position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
@@ -855,24 +921,21 @@ select.btn option:hover {
     padding: 10px 12px 8px;
     grid-template-columns: 1fr;
     gap: 6px;
-    background: linear-gradient(180deg, rgba(6,8,15,0.92) 0%, rgba(6,8,15,0.6) 80%, transparent 100%);
+    background: linear-gradient(180deg, rgba(6,8,15,0.94) 0%, rgba(6,8,15,0.65) 80%, transparent 100%);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
   }
   .hero-eyebrow { font-size: 9.5px; letter-spacing: 0.12em; margin-bottom: 2px; }
   .hero-title { font-size: 17px; line-height: 1.15; }
-  .hero-sub {
-    /* on mobile, the subtitle is too verbose to live in the always-visible hero */
-    display: none;
-  }
+  .hero-sub { display: none; }
   .hero-titles { padding-right: 0; }
-  /* Stats scroll horizontally on small screens */
   .stats {
     overflow-x: auto;
     scrollbar-width: none;
     margin: 4px -12px 0;
     padding: 0 12px 4px;
     scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
   .stats::-webkit-scrollbar { display: none; }
   .stat {
@@ -883,24 +946,67 @@ select.btn option:hover {
   .stat .v { font-size: 12.5px; }
   .stat .l { font-size: 9px; }
   .stat .s { font-size: 9.5px; }
+
+  /* Mobile dock pinned to bottom edge with safe-area inset, single row */
   .dock {
-    top: auto; bottom: 88px; right: 12px; left: 12px;
-    flex-direction: row; justify-content: center;
-    z-index: 11;
+    top: auto; bottom: 0; right: 0; left: 0;
+    transform: none;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, transparent, rgba(6,8,15,0.92) 35%);
+    z-index: 13;
   }
-  .dock-card { padding: 6px; gap: 4px; }
+  .dock-card {
+    padding: 5px;
+    gap: 4px;
+    background: rgba(20,24,40,0.85);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .dock-card::-webkit-scrollbar { display: none; }
   .dock-card .label { display: none; }
-  select.btn { min-width: 0; flex: 1; max-width: 140px; }
+  /* On mobile, swap full label for compact */
+  .btn .lf { display: none; }
+  .btn .lm { display: inline; }
+  .view-btn {
+    flex: 1 1 0; min-width: 0;
+    padding: 9px 8px; font-size: 12px; min-height: 38px;
+    justify-content: center; display: flex; align-items: center;
+  }
+  select.btn {
+    flex: 1 1 0; min-width: 0; padding: 9px 26px 9px 10px;
+    font-size: 12.5px; min-height: 38px;
+  }
+  .btn.icon-only {
+    flex: 0 0 38px; min-height: 38px;
+  }
+
   .legend-key { display: none; }
   .panel {
-    left: 12px; right: 12px; width: auto; bottom: 152px;
-    padding: 12px 14px;
+    left: 0; right: 0; width: auto;
+    bottom: 0;
+    border-radius: 16px 16px 0 0;
+    padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
+    transform: translateY(calc(100% + 16px));
+    transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: block !important;
+    pointer-events: none;
   }
-  .hint { display: none; }  /* on touch devices the hint is misleading */
+  .panel.open {
+    transform: translateY(0);
+    pointer-events: auto;
+    /* leave room for dock above the bottom edge */
+    bottom: 92px;
+  }
+  .hint { display: none; }
+  .bottom-line { display: none; } /* mobile users get the Insights sheet instead */
 }
 @media (max-width: 480px) {
   .hero-title { font-size: 15px; }
   .stat { width: 180px; }
+  .view-btn { font-size: 11px; padding: 9px 6px; }
 }
 </style>
 </head>
@@ -938,18 +1044,42 @@ select.btn option:hover {
 <div class="dock">
   <div class="dock-card">
     <div class="label">View</div>
-    <button class="btn view-btn active" data-view="iso">Iso</button>
-    <button class="btn view-btn" data-view="top">Top (Carta)</button>
-    <button class="btn view-btn" data-view="front">ARR vs Round</button>
-    <button class="btn view-btn" data-view="side">ARR vs Val</button>
+    <button class="btn view-btn active" data-view="iso" aria-label="3D iso view">
+      <span class="lf">Iso</span><span class="lm">3D</span>
+    </button>
+    <button class="btn view-btn" data-view="top" aria-label="Top-down Carta map view">
+      <span class="lf">Top (Carta)</span><span class="lm">Map</span>
+    </button>
+    <button class="btn view-btn" data-view="front" aria-label="ARR vs Round Size">
+      <span class="lf">ARR vs Round</span><span class="lm">vs Round</span>
+    </button>
+    <button class="btn view-btn" data-view="side" aria-label="ARR vs Valuation">
+      <span class="lf">ARR vs Val</span><span class="lm">vs Val</span>
+    </button>
   </div>
   <div class="dock-card">
     <div class="label">Sector</div>
     <select id="sector-select" class="btn" aria-label="Jump to sector">
-      <option value="">Jump to...</option>
+      <option value="">Jump to sector...</option>
       __SECTOR_OPTIONS__
     </select>
+    <button class="btn icon-only" id="insights-btn" aria-label="Show key insights" title="Key insights">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    </button>
   </div>
+</div>
+
+<!-- Mobile-accessible Bottom-Line sheet (also reachable on desktop via the i button) -->
+<div class="sheet" id="insights-sheet" role="dialog" aria-label="Key insights">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <button class="sheet-close" id="insights-close" aria-label="Close">&times;</button>
+  <div class="sheet-eyebrow">Bottom Line</div>
+  <h3>What this means if you're writing seed checks</h3>
+  <ul>
+    <li>Don't anchor <b>AI Infra</b> valuations to ARR multiples. Comp set is bimodal: frontier labs at $0 + tooling players at $1-5M.</li>
+    <li><b>Analytics, AI Apps, Marketplace, Cybersecurity</b> are the cleanest sectors for revenue-anchored seed comps. Trust the multiple.</li>
+    <li>For <b>Biotech, Hardware, Semis, Renewables</b>, replace the multiple with a milestone schedule. ARR is the wrong question.</li>
+  </ul>
 </div>
 
 <div id="chart">__PLOTLY_DIV__</div>
@@ -964,6 +1094,7 @@ select.btn option:hover {
 </aside>
 
 <div class="panel" id="info" role="dialog" aria-live="polite">
+  <div class="sheet-handle" aria-hidden="true"></div>
   <button class="close" id="info-close" aria-label="Close">&times;</button>
   <h3 id="info-title"></h3>
   <div class="meta" id="info-class"></div>
@@ -1032,23 +1163,68 @@ closeBtn.addEventListener('click', () => {
   panel.classList.remove('open'); sel.value = '';
 });
 
+/* ---------- INSIGHTS SHEET ---------- */
+const sheet = document.getElementById('insights-sheet');
+const insightsBtn = document.getElementById('insights-btn');
+const sheetClose = document.getElementById('insights-close');
+if (insightsBtn) insightsBtn.addEventListener('click', () => sheet.classList.add('open'));
+if (sheetClose) sheetClose.addEventListener('click', () => sheet.classList.remove('open'));
+// Click outside to dismiss
+document.addEventListener('click', (e) => {
+  if (sheet.classList.contains('open') &&
+      !sheet.contains(e.target) &&
+      !(insightsBtn && insightsBtn.contains(e.target))) {
+    sheet.classList.remove('open');
+  }
+});
+
+/* ---------- BOTTOM-SHEET DRAG-TO-DISMISS (mobile) for info panel & insights sheet ---------- */
+function makeDraggable(el, onClose) {
+  let startY = 0, deltaY = 0, dragging = false;
+  el.addEventListener('touchstart', (e) => {
+    if (window.matchMedia('(min-width: 721px)').matches) return;
+    startY = e.touches[0].clientY; deltaY = 0; dragging = true;
+    el.style.transition = 'none';
+  }, { passive: true });
+  el.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    deltaY = Math.max(0, e.touches[0].clientY - startY);
+    el.style.transform = `translateY(${deltaY}px)`;
+  }, { passive: true });
+  el.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
+    el.style.transition = '';
+    el.style.transform = '';
+    if (deltaY > 80) onClose();
+  });
+}
+makeDraggable(panel, () => { panel.classList.remove('open'); sel.value = ''; });
+makeDraggable(sheet, () => sheet.classList.remove('open'));
+
 function getPlot() {
   return document.querySelector('#chart .js-plotly-plot') || document.querySelector('#chart .plotly-graph-div');
 }
 
-/* ------- Camera transitions: use Plotly's native animate (GPU, single call) ------- */
+/* ------- Camera transitions: gl-plot3d's internal lookAt animates smoothly,
+   fall back to Plotly.relayout otherwise (instant snap, but reliable). ------- */
 function setCamera(el, target) {
-  // Plotly.animate handles the transition in one call; safe and smooth.
-  if (window.Plotly && Plotly.animate) {
-    Plotly.animate(el, {
-      layout: { 'scene.camera': target }
-    }, {
-      transition: { duration: 700, easing: 'cubic-out' },
-      frame: { duration: 700, redraw: false }
-    });
-  } else {
-    Plotly.relayout(el, { 'scene.camera': target });
-  }
+  try {
+    const sceneObj = el._fullLayout && el._fullLayout.scene && el._fullLayout.scene._scene;
+    if (sceneObj && sceneObj.glplot && sceneObj.glplot.camera && sceneObj.glplot.camera.lookAt) {
+      sceneObj.glplot.camera.lookAt(
+        [target.eye.x, target.eye.y, target.eye.z],
+        [(target.center && target.center.x) || 0,
+         (target.center && target.center.y) || 0,
+         (target.center && target.center.z) || 0],
+        [(target.up && target.up.x) || 0,
+         (target.up && target.up.y) || 0,
+         (target.up && target.up.z) || 1]
+      );
+      return;
+    }
+  } catch (err) { /* fall through */ }
+  Plotly.relayout(el, { 'scene.camera': target });
 }
 
 /* ------- Hover: just change the cursor; skip restyle, it stutters the WebGL scene ------- */
