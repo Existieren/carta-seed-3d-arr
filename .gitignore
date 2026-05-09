@@ -6,3 +6,7 @@ venv/
 Thumbs.db
 .idea/
 .vscode/
+# Local screenshot artifacts and helper script
+_screenshot.py
+desktop_*.png
+mobile_*.png
