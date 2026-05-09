@@ -26,7 +26,7 @@ Full methodology with sourced multiples, NBMs, priors, weights, and the per-sect
 
 ## Reproduce
 
-```
+```bash
 pip install plotly scipy numpy pandas tabulate
 python build_3d_chart.py
 ```
@@ -35,6 +35,6 @@ Outputs `seed_3d_chart.html` in the working directory.
 
 ## Files
 
-- `seed_3d_chart.html` — the interactive 3D chart (primary deliverable)
+- `index.html` — the interactive 3D chart (primary deliverable, served at the live URL above)
 - `methodology.md` — full methodology with sources
 - `build_3d_chart.py` — reproducible script

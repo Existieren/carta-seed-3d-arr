@@ -21,7 +21,7 @@ import plotly.graph_objects as go
 from scipy.interpolate import griddata
 
 OUT_DIR = Path(__file__).resolve().parent
-HTML_OUT = OUT_DIR / "seed_3d_chart.html"
+HTML_OUT = OUT_DIR / "index.html"
 
 # ---------------------------------------------------------------------------
 # 1. SECTOR DATA (centroids read from the Carta chart; per-sector table not
