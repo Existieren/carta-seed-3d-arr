@@ -310,47 +310,46 @@ def make_figure(df: pd.DataFrame) -> go.Figure:
         annotations_3d.append(dict(
             x=r["round_M"], y=r["post_M"], z=r["ARR_blend"],
             text=("<b>AI Infra</b><br>"
-                  "<span style='font-size:10px;color:rgba(245,247,255,0.7)'>"
-                  "$65M post, $0.54M ARR.<br>"
-                  "Thinking Machines $12B / $0 rev<br>drags the cohort.</span>"),
+                  "<span style='font-size:9.5px;color:rgba(245,247,255,0.7)'>"
+                  "$65M post · $0.54M ARR</span>"),
             showarrow=True, arrowhead=0,
-            arrowcolor="rgba(245,180,80,0.75)",
-            arrowsize=1.0, arrowwidth=1.2, ax=80, ay=20,
-            font=dict(size=11.5, color="rgba(252,205,103,0.98)",
+            arrowcolor="rgba(245,180,80,0.7)",
+            arrowsize=1.0, arrowwidth=1.0, ax=45, ay=10,
+            font=dict(size=11, color="rgba(252,205,103,0.98)",
                       family="Inter, system-ui, sans-serif"),
             align="left",
-            bgcolor="rgba(8,10,18,0.92)",
-            bordercolor="rgba(245,180,80,0.45)",
-            borderpad=7, borderwidth=1,
-            opacity=0.97,
+            bgcolor="rgba(8,10,18,0.9)",
+            bordercolor="rgba(245,180,80,0.4)",
+            borderpad=5, borderwidth=1,
+            opacity=0.95,
         ))
 
     if "Analytics" in df["sector"].values:
         r = df[df["sector"] == "Analytics"].iloc[0]
         annotations_3d.append(dict(
             x=r["round_M"], y=r["post_M"], z=r["ARR_blend"],
-            text=("<b>Analytics — ARR leader</b><br>"
-                  "<span style='font-size:10px;color:rgba(245,247,255,0.7)'>"
-                  "$0.96M ARR on $36M post.</span>"),
+            text=("<b>Analytics</b><br>"
+                  "<span style='font-size:9.5px;color:rgba(245,247,255,0.7)'>"
+                  "ARR leader · $0.96M</span>"),
             showarrow=True, arrowhead=0,
-            arrowcolor="rgba(232,90,140,0.75)",
-            arrowsize=1.0, arrowwidth=1.2, ax=-95, ay=15,
-            font=dict(size=11.5, color="rgba(252,123,170,0.98)",
+            arrowcolor="rgba(232,90,140,0.7)",
+            arrowsize=1.0, arrowwidth=1.0, ax=-55, ay=10,
+            font=dict(size=11, color="rgba(252,123,170,0.98)",
                       family="Inter, system-ui, sans-serif"),
             align="left",
-            bgcolor="rgba(8,10,18,0.92)",
+            bgcolor="rgba(8,10,18,0.9)",
             bordercolor="rgba(232,90,140,0.4)",
-            borderpad=7, borderwidth=1,
-            opacity=0.97,
+            borderpad=5, borderwidth=1,
+            opacity=0.95,
         ))
 
     # Quiet edge labels for the supporting cast
     quiet_sectors = [
-        ("AI Applications", -70, 25),
-        ("Marketplace",     -65, 35),
-        ("Cybersecurity",    70, 30),
-        ("Biotech",         -55, 35),
-        ("Fintech",          65, -5),
+        ("AI Applications", -50, 20),
+        ("Marketplace",     -50, 30),
+        ("Cybersecurity",    50, 25),
+        ("Biotech",         -42, 28),
+        ("Fintech",          50,  0),
     ]
     for sector_name, ax, ay in quiet_sectors:
         rows = df[df["sector"] == sector_name]
@@ -402,6 +401,7 @@ def make_figure(df: pd.DataFrame) -> go.Figure:
                            font=dict(size=12, color="rgba(252,205,103,0.92)",
                                      family="Inter, system-ui, sans-serif")),
                 backgroundcolor="rgba(8,10,20,0.45)",
+                range=[-0.05, max(df["ARR_blend"].max(), 1.0) * 1.15],
                 **axis_common,
             ),
             camera=dict(eye=dict(x=1.35, y=1.35, z=0.85),
@@ -929,23 +929,13 @@ select.btn option:hover {
   .hero-title { font-size: 17px; line-height: 1.15; }
   .hero-sub { display: none; }
   .hero-titles { padding-right: 0; }
-  .stats {
-    overflow-x: auto;
-    scrollbar-width: none;
-    margin: 4px -12px 0;
-    padding: 0 12px 4px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+  /* On mobile, stats are redundant — chart annotations + Insights sheet carry the story */
+  .stats { display: none; }
+  /* Chart confines to viewport area between hero and dock so bubbles fill properly */
+  #chart {
+    inset: 0;
+    bottom: calc(98px + env(safe-area-inset-bottom));
   }
-  .stats::-webkit-scrollbar { display: none; }
-  .stat {
-    flex: 0 0 auto; width: 200px; min-width: 0;
-    scroll-snap-align: start;
-    padding: 7px 11px;
-  }
-  .stat .v { font-size: 12.5px; }
-  .stat .l { font-size: 9px; }
-  .stat .s { font-size: 9.5px; }
 
   /* Mobile dock pinned to bottom edge with safe-area inset, single row */
   .dock {
